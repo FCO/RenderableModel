@@ -8,9 +8,15 @@
 		<script>
 			window.onload = function(){
 				var r = new Template(
-					"bla <%= this.ble %> bli <%= this.blo %><br /><% for(var i = 0; i < this.array.length; i++) { %>blu<%= i %>: <%= this.array[i] %>; <% } %>"
+					"bla <%= this.ble %>; bli <%= this.blo %>;<br /><% for(var i = 0; i < this.array.length; i++) { %>blu<%= i %>: <%= this.array[i] %>; <% } %>"
 				);
-				document.write(r.render({ble: "eeeee", blo: "oooooooooo", array: ["a", "e", "i", "o", "u"]}));
+				var acumulator = new Acumulator("the_last_one")
+				for(var i = 0; i < 10; i++) {
+					acumulator.push(
+						{ble: "number: " + i, blo: "oooooooooo", array: ["a", "e", "i", "o", "u"]},
+						function(data){document.write(r.render(data))}
+					);
+				}
 			};
 		</script>
 	</body>
