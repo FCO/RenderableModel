@@ -21,7 +21,7 @@ Template.prototype = {
 			template_hashes.push({code: code, data: data});
 		}
 		var func;
-		var compiled_template = "func = function() {\nvar ret = '';\n";
+		var compiled_template = "var ret = '';\n";
 		for(var i = 0; i < template_hashes.length; i++) {
 			if(template_hashes[i].data != null)
 				compiled_template += "ret += '" + template_hashes[i].data + "';\n";
@@ -32,8 +32,7 @@ Template.prototype = {
 				compiled_template += template_hashes[i].code + ";\n";
 			}
 		}
-		compiled_template += "return ret;\n}";
-		eval(compiled_template);
-		this.__function__ = func;
+		compiled_template += "return ret;\n";
+		this.__function__ =  new Function(compiled_template);
 	},
 };

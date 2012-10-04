@@ -41,14 +41,14 @@ Acumulator.prototype = {
 			this.cb		= callback;
 		},
 	},
-	agrupator_func:		function(value){
-		return value.toString();
+	agrupator_func:		function(value, cb){
+		return cb.toString();
 	},
 	setAgrupatorFunc:	function(agrupator_func){
 		this.agrupator_func = agrupator_func;
 	},
 	push:			function(value, callback) {
-		var group	= this.agrupator_func(value);
+		var group	= this.agrupator_func(value, callback);
 		if(!this.groups[group])
 			this.groups[group] = {};
 		this.agregator_func.call(this.groups[group], value, callback);

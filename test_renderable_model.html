@@ -1,0 +1,17 @@
+<html>
+	<head>
+		<script src="RenderableModel.js"></script>
+		<script src="Template.js"></script>
+		<script src="Acumulator.js"></script>
+	</head>
+	<body>
+		<script>
+			window.onload = function(){
+				var r = new Template(
+					"bla <%= this.ble %> bli <%= this.blo %><br /><% for(var i = 0; i < this.array.length; i++) { %>blu<%= i %>: <%= this.array[i] %>; <% } %>"
+				);
+				document.write(r.render({ble: "eeeee", blo: "oooooooooo", array: ["a", "e", "i", "o", "u"]}));
+			};
+		</script>
+	</body>
+</html>
