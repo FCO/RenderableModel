@@ -67,9 +67,8 @@ Acumulator.prototype = {
 		},
 		acumulate_array:	function(value, callback) {
 			if(this.val == null) this.val	= [];
-			if(this.cb  == null) this.cb	= [];
 			this.val.push(value);
-			this.cb.push(callback);
+			this.cb = callback;
 		},
 		counter:		function(value, callback) {
 			if(this.val == null) this.val	= 0;
