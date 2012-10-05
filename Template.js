@@ -1,3 +1,5 @@
+setVersion("Template.js", 0.4);
+
 function Template(code) {
 	this._templates = {};
 	this.setTemplate(code);

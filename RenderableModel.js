@@ -1,3 +1,10 @@
+setVersion("RenderableModel.js", 0.4);
+
+depends({
+	"Template.js":		0.4,
+	"Acumulator.js":	0.4,
+});
+
 function RenderableModel(){}
 
 RenderableModel.default_prototype = {

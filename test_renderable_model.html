@@ -4,7 +4,9 @@
 	</head>
 	<body>
 		<script>
-			window.onload = function(){
+			depends({
+				"RenderableModel.js":	0.4,
+			}, function(){
 				var r = new Template(
 					"bla <%= this.ble %>; bli <%= this.blo %>;<br /><% for(var i = 0; i < this.array.length; i++) { %>blu<%= i %>: <%= this.array[i] %>; <% } %>"
 				);
@@ -12,10 +14,10 @@
 				for(var i = 0; i < 10; i++) {
 					acumulator.push(
 						{ble: "number: " + i, blo: "oooooooooo", array: ["a", "e", "i", "o", "u"]},
-						function(data){document.write(r.render(data))}
+						function(data){document.body.innerHTML += r.render(data)}
 					);
 				}
-			};
+			});
 		</script>
 	</body>
 </html>

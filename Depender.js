@@ -81,27 +81,38 @@ Depender.prototype = {
 		return null;
 	},
 	getDep:			function(file, version) {
+		console.log(".getDep(" + file + ", " + version + ")");
 		var content;
-		//if(this.isStored(file, version)) {
-		//	content = this.getStoredFile(file);
 		if((content = this.getVersionedFile(file, version)) == null) {
 			var AJAX = new XMLHttpRequest();
 			if (AJAX) {
 				AJAX.open("GET", file, false);                             
 				AJAX.send(null);
 				content = AJAX.responseText;                                         
-			} else {
-				return false;
 			}
 			this.store(file, content);
-			var scriptTag = document.createElement("script");
-			scriptTag.innerText = content;
-			document.body.appendChild(scriptTag);
+		} else {
+			console.log("stored!!!");
+			console.log(content);
 		}
+		var scriptTag = document.createElement("script");
+		scriptTag.innerHTML = content;
+		document.body.appendChild(scriptTag);
 	},
+	getDeps:		function(data, callback) {
+		console.log("getDeps");
+		for(var file in data) {
+			this.getDep(file, data[file]);
+		}
+	}
 };
 
-function depends(deps) {
-	var depender = new Depender();
-	depender.setDeps(deps);
+function depends(deps, callback) {
+	console.log("depends()");
+	Depender.get_instance().getDeps(deps);
+	if(callback) callback(window);
+}
+
+function setVersion(file, version) {
+	Depender.get_instance().changeVersion(file, version);
 }

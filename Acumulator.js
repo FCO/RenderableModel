@@ -1,3 +1,5 @@
+setVersion("Acumulator.js", 0.4);
+
 function Acumulator(agregator_func) {
 	this.agregator_func = this.agregator.the_last_one;
 	if(agregator_func) {
