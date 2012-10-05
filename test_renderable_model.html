@@ -1,29 +1,9 @@
 <html>
 	<head>
-		<script src="Depender.js"></script>
+		<!--<script src="Depender.js"></script>-->
 	</head>
 	<body>
-		<!--<script>
-			var depender_url = "Depender.js";
-			if(localStorage) {
-				var script = document.createElement("script");
-				var depender_code = localStorage.getItem(depender_url);
-				document.body.appendChild(script);
-				if(depender_code) {
-					script.innerHTML = depender_code;
-				} else {
-					script.src = depender_url;
-				}
-			} else {
-				(new Function(
-					"function depends(url, version) {"
-					+ "var script = document.createElement('script');"
-					+ "script.src = url;"
-					+ "document.body.appendChild(script);"
-					+ "}"
-				))();
-			}
-		</script>-->
+		<script src="loader.js"> </script>
 		<script>
 			depends({
 				"RenderableModel.js":	0.6,
