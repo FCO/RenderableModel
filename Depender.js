@@ -81,7 +81,6 @@ Depender.prototype = {
 		return null;
 	},
 	getDep:			function(file, version) {
-		console.log(".getDep(" + file + ", " + version + ")");
 		var content;
 		if((content = this.getVersionedFile(file, version)) == null) {
 			var AJAX = new XMLHttpRequest();
@@ -91,16 +90,12 @@ Depender.prototype = {
 				content = AJAX.responseText;                                         
 			}
 			this.store(file, content);
-		} else {
-			console.log("stored!!!");
-			console.log(content);
 		}
 		var scriptTag = document.createElement("script");
 		scriptTag.innerHTML = content;
 		document.body.appendChild(scriptTag);
 	},
 	getDeps:		function(data, callback) {
-		console.log("getDeps");
 		for(var file in data) {
 			this.getDep(file, data[file]);
 		}
@@ -108,7 +103,6 @@ Depender.prototype = {
 };
 
 function depends(deps, callback) {
-	console.log("depends()");
 	Depender.get_instance().getDeps(deps);
 	if(callback) callback(window);
 }
