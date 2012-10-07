@@ -87,8 +87,12 @@ Depender.prototype = {
 		return null;
 	},
 	getDep:			function(file, version) {
-		if(this.loaded && this.loaded[file]) return;
-		file = (new URITemplate(file)).absolute;
+		if(this.loaded && this.loaded[file]) {
+			console.log("Skipping file: " + file);
+			console.log("already loaded...");
+			return;
+		}
+		file = (new URI(file)).absolute;
 		var content;
 		if((content = this.getVersionedFile(file, version)) == null) {
 			var AJAX = new XMLHttpRequest();
@@ -116,12 +120,14 @@ function depends(deps, callback) {
 }
 
 function setVersion(file, version) {
+	file = (new URI(file)).absolute;
 	var depender = Depender.get_instance();
-	depender.changeVersion(file, version);
 	depender.addLoadedFile(file);
+	depender.changeVersion(file, version);
 }
 
-function URITemplate(string, orig) {
+function URI(string, orig) {
+	// Minimal Version
 	if(!orig) orig = window.location.href;
 
 	this.protocol	=	orig.protocol || "file";
@@ -130,12 +136,13 @@ function URITemplate(string, orig) {
 		this.hostname = "";
 	this.port	=	orig.port;
 	this.path	=	orig.path;
-	if(orig.search) this.query	=	orig.search();
+	if(orig.search)
+		this.query = orig.search();
 
 	this.setURI(string);
 }
 
-URITemplate.prototype = {
+URI.prototype = {
 	protocol:	"",
 	username:	null,
 	password:	null,
@@ -144,10 +151,7 @@ URITemplate.prototype = {
 	path:		"",
 	query:		"",
 	setURI:		function(string) {
-		console.log(string);
 		var parts = string.match(/^(?:(?:(\w{3,}):\/\/)(?:([\w.+-]+)(?::([\w.+-]+))?@)?([\w+.-]+)(?::(\d+))?|(file):\/\/)?(\/?[\w\/.+-]+)?(?:\?(.*))?$/);
-		console.log("parts");
-		console.log(parts);
 		if(parts) {
 			if(parts[1]) this.protocol = parts[1];
 			else if(parts[6]) this.protocol = parts[6];
@@ -167,13 +171,9 @@ URITemplate.prototype = {
 		} else {
 			throw "URI not recognized.";
 		}
-		console.log(this);
 		if(!this.protocol || this.hostname == null) {
 			throw "No protocol or hostname defined.";
 		}
-	},
-	set absolute(string) {
-		ths.setURI(string);
 	},
 	get absolute() {
 		if(this.protocol == "file")
@@ -189,50 +189,4 @@ URITemplate.prototype = {
 
 		return uri
 	},
-	set relative(string) {
-		ths.setURI(string);
-	},
-	get relative() {
-		return this.getRelative(window.location.href.toString());
-	},
-	getRelative:	function(relative_of) {
-		var relative_of_obj = new URITemplate(relative_of);
-
-		if(
-			this.protocol		!= relative_of_obj.protocol
-			|| this.username	!= relative_of_obj.username
-			|| this.password	!= relative_of_obj.password
-			|| this.hostname	!= relative_of_obj.hostname
-			|| this.port		!= relative_of_obj.port
-		) {
-			return this.absolute;
-		}
-		var t_path = this.path.split("/");
-		var r_path = relative_of_obj.path.split("/");
-
-		var file = t_path.pop();
-		r_path.pop();
-
-		var equal = true;
-		var path = "";
-		if(t_path[0] != r_path[0]) {
-			path = this.path;
-		} else {
-			var new_path = [];
-			while(r_path.length > 0) {
-				var t = t_path.shift();
-				var r = r_path.shift();
-				if(t != r) equal = false;
-				if(!equal) {
-					path += "../";
-					new_path.push(t);
-				}
-			}
-			while(t_path.length > 0) new_path.push(t_path.shify());
-			path += new_path.join("/") + "/";
-		}
-		path = path.replace(/\/{2,}/, "/") + file;
-		if(this.query) path += "?" + this.query;
-		return path
-	}
 };
