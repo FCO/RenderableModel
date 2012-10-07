@@ -99,7 +99,7 @@ Depender.prototype = {
 			if (AJAX) {
 				AJAX.open("GET", file, false);                             
 				AJAX.send(null);
-				content = AJAX.responseText;                                         
+				content = AJAX.responseText;
 			}
 			this.store(file, content);
 		}
