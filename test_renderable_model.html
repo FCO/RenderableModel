@@ -6,12 +6,14 @@
 		<script src="loader.js"> </script>
 		<script>
 			depends({
-				"RenderableModel.js":	0.6,
+				"RenderableModel.js":	0.8,
+				"Model.js":		null,
 			}, function(){
 				var r = new Template(
 					"bla <%= this.ble %>; bli <%= this.blo %>;<br /><% for(var i = 0; i < this.array.length; i++) { %>blu<%= i %>: <%= this.array[i] %>; <% } %>"
 				);
 				var acumulator = new Acumulator("the_last_one")
+				acumulator.waiting_time = 100;
 				for(var i = 0; i < 10; i++) {
 					acumulator.push(
 						{ble: "number: " + i, blo: "oooooooooo", array: ["a", "e", "i", "o", "u"]},

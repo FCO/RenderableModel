@@ -1,4 +1,4 @@
-setVersion("RenderableModel.js", 0.6);
+setVersion("RenderableModel.js", 0.8);
 
 depends({
 	"Template.js":		0.4,
