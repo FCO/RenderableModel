@@ -1,4 +1,4 @@
-function URI(string, orig) {
+function URITemplate(string, orig) {
 	if(!orig) orig = window.location.href;
 
 	this.protocol	=	orig.protocol || "file";
@@ -12,7 +12,7 @@ function URI(string, orig) {
 	this.setURI(string);
 }
 
-URI.prototype = {
+URITemplate.prototype = {
 	protocol:	"",
 	username:	null,
 	password:	null,
@@ -69,7 +69,7 @@ URI.prototype = {
 		return this.getRelative(window.location.href.toString());
 	},
 	getRelative:	function(relative_of) {
-		var relative_of_obj = new URI(relative_of);
+		var relative_of_obj = new URITemplate(relative_of);
 
 		if(
 			this.protocol		!= relative_of_obj.protocol
