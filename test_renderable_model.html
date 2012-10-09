@@ -7,7 +7,6 @@
 		<script>
 			depends({
 				"RenderableModel.js":	0.8,
-				"Model.js":		null,
 			}, function(){
 				var r = new Template(
 					"bla <%= this.ble %>; bli <%= this.blo %>;<br /><% for(var i = 0; i < this.array.length; i++) { %>blu<%= i %>: <%= this.array[i] %>; <% } %>"

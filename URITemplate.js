@@ -1,3 +1,4 @@
+setVersion("URITemplate.js", 0.1);
 function URITemplate(template) {
 	this.template = template;
 	this.regex = new RegExp(template.replace(/\{\s*\w+\s*\}/g, "([\\w\\/.+-]*)"));
