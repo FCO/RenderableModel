@@ -14,7 +14,7 @@ if(localStorage) {
 			content = AJAX.responseText;                                         
 		}
 		script.innerHTML = content;
-		localStorage.setItem(depender_url + "_" + depender_ver, content);
+		localStorage.setItem(depender_url, content);
 	}
 } else {
 	window.setVersion = function(){};
@@ -30,4 +30,3 @@ if(localStorage) {
 			+ "callback();"
 		);
 }
-

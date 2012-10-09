@@ -1,12 +1,5 @@
-setVersion("Model.js", 0.1);
 function Model() {
 }
-
-Model.getClass = function(className) {
-	if(Model.__classes == null)
-		Model.__classes = {};
-	return Model.__classes[className]
-};
 
 Model.class = function(className, data) {
 	var primaryKey = data.primaryKey || "id";
@@ -90,10 +83,5 @@ Model.class = function(className, data) {
 			this.__values[key] = val;
 		});
 	}
-	if(Model.__classes == null)
-		Model.__classes = {};
-
-	Model.__classes[className] = new_class;
-
 	return new_class;
 };
