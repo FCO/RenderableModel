@@ -1,11 +1,11 @@
 setVersion("URITemplate.js", 0.1);
 function URITemplate(template) {
-	this.template = template;
-	this.regex = new RegExp(template.replace(/\{\s*\w+\s*\}/g, "([\\w\\/.+-]*)"));
-	this.values = {};
-	this.var_order = [];
-	var values = this.values;
-	var var_order = this.var_order;
+	this.template	= template;
+	this.regex	= new RegExp(template.replace(/\{\s*\w+\s*\}/g, "([\\w\\/.+-]*)"));
+	this.values	= {};
+	this.var_order	= [];
+	var values	= this.values;
+	var var_order	= this.var_order;
 	template.replace(/\{\s*(\w+)\s*\}/g, function(val){var val = val.replace(/^\{\s*|\s*}$/g, ""); values[val] = ""; var_order.push(val)});
 }
 

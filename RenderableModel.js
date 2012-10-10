@@ -5,6 +5,7 @@ depends({
 	"Acumulator.js":	0.4,
 	"URITemplate.js":	0.1,
 	"Model.js":		0.1,
+	"URI.js":		null,
 });
 
 function RenderableModel(){}
