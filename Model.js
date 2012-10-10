@@ -1,4 +1,7 @@
 setVersion("Model.js", 0.1);
+
+depends({"URI.js": 0.1});
+
 function Model() {
 }
 
@@ -13,22 +16,52 @@ Model.class = function(className, data) {
 	var new_class;
 
 	var func	= "\
-			   this." + primaryKey + " = " + primaryKey + ";\
-			   this.__primarykey = '" + primaryKey + "';\
+			   this.primaryKey = data." + primaryKey + ";\
+			   this." + primaryKey + " = data." + primaryKey + ";\
+			   this.__primaryKey = '" + primaryKey + "';\
 			   this.__values = {};\
 			   this.__exists = false;\
+			   for(var key in data) {\
+			   	this.__values[key] = data[key];\
+			    }\
 			  "
 	;
 
-	new_class = new Function(primaryKey, "data", func);
+	new_class = new Function("data", func);
 	new_class.how_to_get_all = function(){throw "how_to_get_all not implemented."};
 	new_class.how_to_get_all = data.how_to_get_all;
 
-	new_class.getAll = function() {} ;
+	new_class.forEach = function(func) {
+		var elements = new_class.getAll();
+		var element;
+		while(element = elements.shift()) {
+			func.call(element, element);
+		}
+	};
+
+	new_class.getAll = function() {
+		var ret = [];
+		var arr = [];
+		if(this.how_to_get_all.constructor == Function) {
+			arr = this.how_to_get_all.call(this);
+		} else {
+			var AJAX = new XMLHttpRequest();
+			if (AJAX) {
+				AJAX.open(method, url, false);                             
+				AJAX.setRequestHeader('Content-Type' , 'application/json');  
+				AJAX.send(JSON.stringify(data));
+				arr = JSON.parse(AJAX.responseText);                                         
+			}
+		}
+		for(var i = 0; i < arr.length; i++) {
+			ret.push(new new_class(arr[i]));
+		}
+		return ret;
+	};
 
 	new_class.prototype = {
 		__values:		null,
-		__primarykey:		null,
+		__primaryKey:		null,
 		__populated:		false,
 		__auto_sync:		(data.auto_sync		|| false),
 
@@ -38,19 +71,39 @@ Model.class = function(className, data) {
 		how_to_update:		(data.how_to_update	|| function(){throw "how_to_update not implemented."}),
 
 		__get_all:			function(data){
-			return this.__http_request(this.how_to_get_all.method,	(new URITemplate(this.how_to_get_all.url)).render(data));
+			var url = new URI(this.how_to_get_all.url);
+			for(var key in data) {
+				url.value(key, data[key]);
+			}
+			return this.__http_request(this.how_to_get_all.method,	url.absolute);
 		},
 		__get_data:			function(data){
-			return this.__http_request(this.how_to_create.method,	(new URITemplate(this.how_to_create.url	)).render(data), this.__values);
+			var url = new URI(this.how_to_get_data.url);
+			for(var key in data) {
+				url.value(key, data[key]);
+			}
+			return this.__http_request(this.how_to_create.method,	url.absolute, this.__values);
 		},
 		__edit:				function(data){
-			return this.__http_request(this.how_to_edit.method,	(new URITemplate(this.how_to_create.url	)).render(data), this.__values);
+			var url = new URI(this.how_to_edit.url);
+			for(var key in data) {
+				url.value(key, data[key]);
+			}
+			return this.__http_request(this.how_to_edit.method,	url.absolute, this.__values);
 		},
 		__create:			function(data){
-			return this.__http_request(this.how_to_create.method,	(new URITemplate(this.how_to_create.url	)).render(data), this.__values);
+			var url = new URI(this.how_to_create.url);
+			for(var key in data) {
+				url.value(key, data[key]);
+			}
+			return this.__http_request(this.how_to_create.method,	url.absolute, this.__values);
 		},
 		__update:			function(data){
-			return this.__http_request(this.how_to_update.method,	(new URITemplate(this.how_to_update.url	)).render(data), this.__values);
+			var url = new URI(this.how_to_update.url);
+			for(var key in data) {
+				url.value(key, data[key]);
+			}
+			return this.__http_request(this.how_to_update.method,	url.absolute, this.__values);
 		},
 		__http_request:			function(method, url, data){
 			var AJAX = new XMLHttpRequest();
@@ -71,7 +124,7 @@ Model.class = function(className, data) {
 		},
 		__get_data_if_is_needed:	function() {
 			if(!this.__populated) {
-				var data = this.how_to_get_data(this.__primarykey)
+				var data = this.how_to_get_data(this.primaryKey)
 				for(var dataKey in data) {
 					if(data[dataKey].constructor != Function)
 						this.__values[dataKey] = data[dataKey];
@@ -81,14 +134,17 @@ Model.class = function(className, data) {
 		},
 	};
 	for(var key in data.defaults) {
-		new_class.prototype.__defineGetter__(key, function(){
-			this.__get_data_if_is_needed();
-			return this.__values[key];
-		});
-		new_class.prototype.__defineSetter__(key, function(val){
-			this.__get_data_if_is_needed();
-			this.__values[key] = val;
-		});
+		
+		var getter = "\
+			this.__get_data_if_is_needed();\
+			return this.__values." + key + ";\
+		";
+		var setter = "\
+			this.__get_data_if_is_needed();\
+			this.__values." + key + " = val;\
+		";
+		new_class.prototype.__defineGetter__(key, new Function(getter));
+		new_class.prototype.__defineSetter__(key, new Function("val", setter));
 	}
 	if(Model.__classes == null)
 		Model.__classes = {};
