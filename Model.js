@@ -11,6 +11,12 @@ Model.getClass = function(className) {
 	return Model.__classes[className]
 };
 
+Model.parse_method_url = function(string) {
+	var args	=	string.split(/\s+/);
+	args[1]		=	new URI(args[1]);
+	return args;
+};
+
 Model.class = function(className, data) {
 	var primaryKey = data.primaryKey || "id";
 	var new_class;
@@ -45,10 +51,14 @@ Model.class = function(className, data) {
 		if(this.how_to_get_all.constructor == Function) {
 			arr = this.how_to_get_all.call(this);
 		} else {
+			var args	=	Model.parse_method_url(this.how_to_get_all);
+			var method	=	args[0];
+			var url		=	args[1];
 			var AJAX = new XMLHttpRequest();
 			if (AJAX) {
-				AJAX.open(method, url, false);                             
-				AJAX.setRequestHeader('Content-Type' , 'application/json');  
+				console.log("AJAX.open(" + method + ", " + url.render() + ", false");
+				AJAX.open(method, url.render(), false);
+				AJAX.setRequestHeader('Content-Type' , 'application/json');
 				AJAX.send(JSON.stringify(data));
 				arr = JSON.parse(AJAX.responseText);                                         
 			}
@@ -71,39 +81,49 @@ Model.class = function(className, data) {
 		how_to_update:		(data.how_to_update	|| function(){throw "how_to_update not implemented."}),
 
 		__get_all:			function(data){
-			var url = new URI(this.how_to_get_all.url);
+			var args	=	Model.parse_method_url(this.how_to_get_all);
+			var method	=	args[0];
+			var url		=	args[1];
 			for(var key in data) {
 				url.value(key, data[key]);
 			}
-			return this.__http_request(this.how_to_get_all.method,	url.absolute);
+			return this.__http_request(method, url.render());
 		},
 		__get_data:			function(data){
-			var url = new URI(this.how_to_get_data.url);
+			var args	=	Model.parse_method_url(this.how_to_get_data);
+			var method	=	args[0];
+			var url		=	args[1];
 			for(var key in data) {
 				url.value(key, data[key]);
 			}
-			return this.__http_request(this.how_to_create.method,	url.absolute, this.__values);
+			return this.__http_request(method, url.render(), this.__values);
 		},
 		__edit:				function(data){
-			var url = new URI(this.how_to_edit.url);
+			var args	=	Model.parse_method_url(this.how_to_edit);
+			var method	=	args[0];
+			var url		=	args[1];
 			for(var key in data) {
 				url.value(key, data[key]);
 			}
-			return this.__http_request(this.how_to_edit.method,	url.absolute, this.__values);
+			return this.__http_request(method,	url.render(), this.__values);
 		},
 		__create:			function(data){
-			var url = new URI(this.how_to_create.url);
+			var args	=	Model.parse_method_url(this.how_to_create);
+			var method	=	args[0];
+			var url		=	args[1];
 			for(var key in data) {
 				url.value(key, data[key]);
 			}
-			return this.__http_request(this.how_to_create.method,	url.absolute, this.__values);
+			return this.__http_request(method,	url.render(), this.__values);
 		},
 		__update:			function(data){
-			var url = new URI(this.how_to_update.url);
+			var args	=	Model.parse_method_url(this.how_to_update);
+			var method	=	args[0];
+			var url		=	args[1];
 			for(var key in data) {
 				url.value(key, data[key]);
 			}
-			return this.__http_request(this.how_to_update.method,	url.absolute, this.__values);
+			return this.__http_request(method,	url.render(), this.__values);
 		},
 		__http_request:			function(method, url, data){
 			var AJAX = new XMLHttpRequest();
@@ -124,7 +144,12 @@ Model.class = function(className, data) {
 		},
 		__get_data_if_is_needed:	function() {
 			if(!this.__populated) {
-				var data = this.how_to_get_data(this.primaryKey)
+				var data;
+				if(this.how_to_get_data.constructor == Function) {
+					data = this.how_to_get_data(this.primaryKey)
+				} else {
+					data = this.__get_data(this.__values);
+				}
 				for(var dataKey in data) {
 					if(data[dataKey].constructor != Function)
 						this.__values[dataKey] = data[dataKey];
