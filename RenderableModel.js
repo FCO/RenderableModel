@@ -3,8 +3,9 @@ setVersion("RenderableModel.js", 0.8);
 depends({
 	"Template.js":		0.4,
 	"Acumulator.js":	0.4,
-	"URITemplate.js":	null,
+	"URITemplate.js":	0.1,
 	"Model.js":		null,
+	"URI.js":		null,
 });
 
 function RenderableModel(){}
