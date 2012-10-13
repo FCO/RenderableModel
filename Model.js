@@ -1,3 +1,5 @@
+if(!window.setVersion)	window.setVersion	= function(){};
+if(!window.depends)	window.depends		= function(){};
 setVersion("Model.js", 0.1);
 
 depends({"URI.js": 0.1});
@@ -37,7 +39,7 @@ Model.class = function(className, data) {
 			   this.__primaryKey = '" + primaryKey + "';\
 			   this.__values = {};\
 			   this.__exists = false;\
-			   this.__populated_value = {};
+			   this.__populated_value = {};\
 			   for(var key in data) {\
 			   	this.__values[key] = data[key];\
 				this.__populated_value[key] = true;\
@@ -46,6 +48,7 @@ Model.class = function(className, data) {
 	;
 
 	new_class = new Function("data", func);
+	new_class.__primaryKey = primaryKey;
 	new_class.how_to_get_all = function(){throw "how_to_get_all not implemented."};
 	new_class.how_to_get_all = data.how_to_get_all;
 
@@ -57,7 +60,24 @@ Model.class = function(className, data) {
 		}
 	};
 
-	new_class.getAll = function(data) {
+	new_class.find = function(pk_value) {
+		var query = {};
+		query[this.__primaryKey] = pk_value;
+		console.log(query);
+		var arr = new_class.search(query);
+		if(arr.length > 1) {
+			throw "More than one result for 'find()'.";
+		}
+		return arr.shift();
+	};
+
+	new_class.getAll = function() {
+		return new_class.search();
+	};
+
+	new_class.search = function(data) {
+		console.log("search");
+		console.log(data);
 		var ret = [];
 		var arr = [];
 		if(this.how_to_get_all.constructor == Function) {
@@ -161,7 +181,7 @@ Model.class = function(className, data) {
 	for(var key in data.defaults) {
 		
 		var getter = "\
-			this.__get_data_if_is_needed(" + key + ");\
+			this.__get_data_if_is_needed('" + key + "');\
 			return this.__values." + key + ";\
 		";
 		var setter = "\
